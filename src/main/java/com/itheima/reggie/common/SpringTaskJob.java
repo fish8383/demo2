@@ -1,7 +1,7 @@
 package com.itheima.reggie.common;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.itheima.reggie.entity.Colorlist;
+
 import com.itheima.reggie.entity.Plcbodydata;
 import com.itheima.reggie.service.ColorlistService;
 import com.itheima.reggie.service.PlcbodydataService;
@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @EnableScheduling
 @Slf4j
@@ -46,7 +46,7 @@ public class SpringTaskJob {
         // 将车间内STATUE 1 的颜色的need drain设为 Y 代表需排
         // 将车间内 STATUE 0 的颜色 need drain设为 N 代表未排
         // 将当日排了的颜色  need drain          设为 D 代表已排
-        if (count < 19) {
+        if (count < 15) {
             colorlistService.UpdateNeedDrain();
             colorlistService.UpdateNoNeedDrain();
             colorlistService.UpdateDrainDone();
