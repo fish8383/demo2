@@ -46,7 +46,7 @@ public class SpringTaskJob {
         // 将车间内STATUE 1 的颜色的need drain设为 Y 代表需排
         // 将车间内 STATUE 0 的颜色 need drain设为 N 代表未排
         // 将当日排了的颜色  need drain          设为 D 代表已排
-        if (count < 17) {
+        if (count < 19) {
             colorlistService.UpdateNeedDrain();
             colorlistService.UpdateNoNeedDrain();
             colorlistService.UpdateDrainDone();
