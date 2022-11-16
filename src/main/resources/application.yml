@@ -23,7 +23,11 @@ spring:
          url: jdbc:mysql://172.22.44.62:3306/digitalj?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
          username: jiangfan
          password: 1234qwer
-
+       durrDxqSqlserver:
+           url: jdbc:sqlserver://172.21.12.85;instanceName=DURR_SYSTEMS;DatabaseName=DXQcontrol_SVWCP3L1_Operational_W;trustServerCertificate=false;integratedSecurity=false;encrypt=false;
+           username: user
+           password: user
+           driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
 
 

@@ -102,5 +102,12 @@ public class testMSSQL {
         plcbodydataList.add(plcbodydata);
          colorlistService.UpdateNeedDrainWhenProduction(plcbodydataList);
     }
+    @Autowired
+    private   DsViewMdsNewService dsViewMdsNewService;
+    @Test
+    void  getdurrDxqSqlserver(){
+        dsViewMdsNewService.getById("118959");
+
+    }
 
 }
