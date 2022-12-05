@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import com.itheima.reggie.entity.DsViewMdsNew;
 import com.itheima.reggie.entity.Plcbodydata;
+import com.itheima.reggie.entity.colorCounter;
+import com.itheima.reggie.service.ColorCounterService;
 import com.itheima.reggie.service.ColorlistService;
 import com.itheima.reggie.service.DsViewMdsNewService;
 import com.itheima.reggie.service.PlcbodydataService;
@@ -13,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -34,9 +38,8 @@ public class SpringTaskJob {
 
 
     @Scheduled(cron = "0 0/6 * *  * ?")
-//    @Scheduled(cron = "0/10 * * *  * ?")
 
-    public void findColorTask() {
+    public void findColorTask()  {
         log.info("定时刷新颜色任务={}", Thread.currentThread().getName() + LocalDate.now());
         LambdaQueryWrapper<Plcbodydata> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.notLike(Plcbodydata::getPlc, "18");
@@ -46,25 +49,42 @@ public class SpringTaskJob {
         colorlistService.SaveOrUpdateColorList(list);
 
 
-
         //当日过车数小于10 ，则为停产日
         // 将车间内STATUE 1 的颜色的need drain设为 Y 代表需排
         // 将车间内 STATUE 0 的颜色 need drain设为 N 代表未排
         // 将当日排了的颜色  need drain          设为 D 代表已排
 
-            //当日过车数大于10，则为生产日，将车间内N和 STATUE 1的 设为警告
+        //当日过车数大于10，则为生产日，将车间内N和 STATUE 1的 设为警告
 
-            colorlistService.UpdateNeedDrainWhenProduction(list);
-
+        colorlistService.UpdateNeedDrainWhenProduction(list);
 
 
     }
+    @Autowired
+    private ColorCounterService colorCounterService;
+
+    @Scheduled(cron = "0/5 * * *  * ?")
+    public void bodyColorCounter() throws URISyntaxException {
+
+        MyWebSocketClient myWebSocketClient = new MyWebSocketClient(new URI("ws://172.22.35.197/ws/emosweb"));
+        LambdaQueryWrapper<colorCounter> queryWrapper =new LambdaQueryWrapper<>();
+
+        queryWrapper.ge(colorCounter::getNumber,0);
+        List<colorCounter> list = colorCounterService.list(queryWrapper);
+        String color1 = list.get(0).getColor();
+        String color2 = list.get(1).getColor();
+        myWebSocketClient.setColor1(color1);
+        myWebSocketClient.setColor2(color2);
+
+        myWebSocketClient.connect();
+    }
+
     @Scheduled(cron = "0 0/6 0/9 *  * ?")
 
-    public  void  ReFreshDrain(){
- LambdaQueryWrapper<Plcbodydata> queryWrapper=new LambdaQueryWrapper<>();
+    public void ReFreshDrain() {
+        LambdaQueryWrapper<Plcbodydata> queryWrapper = new LambdaQueryWrapper<>();
 
- queryWrapper.like(Plcbodydata::getPlc,"CC");
+        queryWrapper.like(Plcbodydata::getPlc, "CC");
         int count = plcbodydataService.count(queryWrapper);
         //当日过车数小于10 ，则为停产日
         // 将车间内STATUE 1 的颜色的need drain设为 Y 代表需排
@@ -78,8 +98,6 @@ public class SpringTaskJob {
         }
 
     }
-
-
 
 
 }
